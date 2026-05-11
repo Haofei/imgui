@@ -152,6 +152,13 @@ Other Changes:
     items straying out of columns boundaries. (#7994, #2221)
   - Box-Select + Tables: fixed an issue when calling `BeginMultiSelect()` in a table
     before layout has been locked (first row or headers row submitted). (#8250)
+- Menus:
+  - BeginMenu()/MenuItem(): fixed accidental triggering of child menu items when
+    opening a menu inside a small host window forcing the child menu window to be
+    repositioned under the mouse cursor. (#8233, #9394)
+    Done by reworking BeginMenu()/MenuItem(): they previously avoiding taking
+    ActiveID + key/click ownership (in order to allow releasing button on another item).
+    Now they take them and release them once the mouse is moved outside item boundaries.
 - Inputs:
   - SetItemKeyOwner(): return true if ownership has been requested, which typically
     needs to to checked for gating further tests. This is important as the function
