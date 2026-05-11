@@ -2519,10 +2519,11 @@ void ImTextureData::DestroyPixels()
 // - Default texture data encoded in ASCII
 // - ImFontAtlas()
 // - ImFontAtlas::Clear()
-// - ImFontAtlas::CompactCache()
+// - ImFontAtlas::ClearFonts()
 // - ImFontAtlas::ClearInputData()
 // - ImFontAtlas::ClearTexData()
-// - ImFontAtlas::ClearFonts()
+// - ImFontAtlas::CompactCache()
+// - ImFontAtlas::SetFontLoader()
 //-----------------------------------------------------------------------------
 // - ImFontAtlasUpdateNewFrame()
 // - ImFontAtlasTextureBlockConvert()
@@ -2693,14 +2694,22 @@ void ImFontAtlas::Clear()
     RendererHasTextures = backup_renderer_has_textures;
 }
 
-void ImFontAtlas::CompactCache()
+void ImFontAtlas::ClearFonts()
 {
-    ImFontAtlasTextureCompact(this);
-}
-
-void ImFontAtlas::SetFontLoader(const ImFontLoader* font_loader)
-{
-    ImFontAtlasBuildSetupFontLoader(this, font_loader);
+    // FIXME-NEWATLAS: Illegal to remove currently bound font.
+    IM_ASSERT(!Locked && "Cannot modify a locked ImFontAtlas!");
+    for (ImFont* font : Fonts)
+        ImFontAtlasBuildNotifySetFont(this, font, NULL);
+    ImFontAtlasBuildDestroy(this);
+    ClearInputData();
+    Fonts.clear_delete();
+    TexIsBuilt = false;
+    for (ImDrawListSharedData* shared_data : DrawListSharedDatas)
+        if (shared_data->FontAtlas == this)
+        {
+            shared_data->Font = NULL;
+            shared_data->FontScale = shared_data->FontSize = 0.0f;
+        }
 }
 
 void ImFontAtlas::ClearInputData()
@@ -2730,22 +2739,14 @@ void ImFontAtlas::ClearTexData()
     //Locked = true; // Hoped to be able to lock this down but some reload patterns may not be happy with it.
 }
 
-void ImFontAtlas::ClearFonts()
+void ImFontAtlas::CompactCache()
 {
-    // FIXME-NEWATLAS: Illegal to remove currently bound font.
-    IM_ASSERT(!Locked && "Cannot modify a locked ImFontAtlas!");
-    for (ImFont* font : Fonts)
-        ImFontAtlasBuildNotifySetFont(this, font, NULL);
-    ImFontAtlasBuildDestroy(this);
-    ClearInputData();
-    Fonts.clear_delete();
-    TexIsBuilt = false;
-    for (ImDrawListSharedData* shared_data : DrawListSharedDatas)
-        if (shared_data->FontAtlas == this)
-        {
-            shared_data->Font = NULL;
-            shared_data->FontScale = shared_data->FontSize = 0.0f;
-        }
+    ImFontAtlasTextureCompact(this);
+}
+
+void ImFontAtlas::SetFontLoader(const ImFontLoader* font_loader)
+{
+    ImFontAtlasBuildSetupFontLoader(this, font_loader);
 }
 
 static void ImFontAtlasBuildUpdateRendererHasTexturesFromContext(ImFontAtlas* atlas)
