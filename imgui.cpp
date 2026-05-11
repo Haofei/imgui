@@ -12488,6 +12488,17 @@ bool ImGui::BeginPopupMenuEx(ImGuiID id, const char* label, ImGuiWindowFlags ext
         return false;
     }
 
+    // As we bypass BeginChild(), set ImGuiChildFlags_AlwaysAutoResize as it is checked independently from ImGuiWindowFlags_AlwaysAutoResize for now (see #9355)
+    // Ideally we should remove setting ImGuiWindowFlags_AlwaysAutoResize in BeginChild().
+    if ((extra_window_flags & ImGuiWindowFlags_ChildWindow) || (extra_window_flags & ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasChildFlags)
+            g.NextWindowData.ChildFlags |= ImGuiChildFlags_AlwaysAutoResize;
+        else
+            g.NextWindowData.ChildFlags = ImGuiChildFlags_AlwaysAutoResize;
+        g.NextWindowData.HasFlags |= ImGuiNextWindowDataFlags_HasChildFlags;
+    }
+
     char name[128];
     IM_ASSERT(extra_window_flags & ImGuiWindowFlags_ChildMenu);
     ImFormatString(name, IM_COUNTOF(name), "%s###Menu_%02d", label, g.BeginMenuDepth); // Recycle windows based on depth
