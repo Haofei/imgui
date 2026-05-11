@@ -3781,6 +3781,7 @@ const char* ImGui::GetStyleColorName(ImGuiCol idx)
     case ImGuiCol_ScrollbarGrabHovered: return "ScrollbarGrabHovered";
     case ImGuiCol_ScrollbarGrabActive: return "ScrollbarGrabActive";
     case ImGuiCol_CheckMark: return "CheckMark";
+    case ImGuiCol_CheckboxSelectedBg: return "CheckboxSelectedBg";
     case ImGuiCol_SliderGrab: return "SliderGrab";
     case ImGuiCol_SliderGrabActive: return "SliderGrabActive";
     case ImGuiCol_Button: return "Button";
