@@ -12490,7 +12490,7 @@ bool ImGui::BeginPopupMenuEx(ImGuiID id, const char* label, ImGuiWindowFlags ext
 
     // As we bypass BeginChild(), set ImGuiChildFlags_AlwaysAutoResize as it is checked independently from ImGuiWindowFlags_AlwaysAutoResize for now (see #9355)
     // Ideally we should remove setting ImGuiWindowFlags_AlwaysAutoResize in BeginChild().
-    if ((extra_window_flags & ImGuiWindowFlags_ChildWindow) || (extra_window_flags & ImGuiWindowFlags_AlwaysAutoResize))
+    if ((extra_window_flags & ImGuiWindowFlags_ChildWindow) && (extra_window_flags & ImGuiWindowFlags_AlwaysAutoResize))
     {
         if (g.NextWindowData.HasFlags & ImGuiNextWindowDataFlags_HasChildFlags)
             g.NextWindowData.ChildFlags |= ImGuiChildFlags_AlwaysAutoResize;
