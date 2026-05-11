@@ -2684,7 +2684,9 @@ ImFontAtlas::~ImFontAtlas()
     TexData = NULL;
 }
 
-// If you call this mid-frame, you would need to add new font and bind them!
+// You probably should not call this directly. It is not well specified.
+// If you want to replace all your fonts mid-frame, most likely you should instead call ClearFonts() then load the new fonts.
+// Calling this mid-frame will discard the CPU-side copy of the texture data which is generally unreliable as you may have textures queued for creation or updates.
 void ImFontAtlas::Clear()
 {
     bool backup_renderer_has_textures = RendererHasTextures;
@@ -2715,7 +2717,6 @@ void ImFontAtlas::ClearFonts()
 void ImFontAtlas::ClearInputData()
 {
     IM_ASSERT(!Locked && "Cannot modify a locked ImFontAtlas!");
-
     for (ImFont* font : Fonts)
         ImFontAtlasFontDestroyOutput(this, font);
     for (ImFontConfig& font_cfg : Sources)
