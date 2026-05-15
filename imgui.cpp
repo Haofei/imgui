@@ -5363,8 +5363,9 @@ void ImGui::UpdateMouseMovingWindowEndFrame()
         // If we try to focus it, FocusWindow() > ClosePopupsOverWindow() will accidentally close any parent popups because they are not linked together any more.
         ImGuiWindow* hovered_root = hovered_window ? hovered_window->RootWindow : NULL;
         const bool is_closed_popup = hovered_root && (hovered_root->Flags & ImGuiWindowFlags_Popup) && !IsPopupOpen(hovered_root->PopupId, ImGuiPopupFlags_AnyPopupLevel);
+        const bool is_queued_focus_request = g.NavMoveSubmitted && (g.NavMoveFlags & ImGuiNavMoveFlags_FocusApi);
 
-        if (hovered_window != NULL && !is_closed_popup)
+        if (hovered_window != NULL && !is_closed_popup && !is_queued_focus_request)
         {
             StartMouseMovingWindow(hovered_window); //-V595
 
