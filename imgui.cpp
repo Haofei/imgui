@@ -8976,6 +8976,8 @@ static void ImGui::UpdateTexturesNewFrame()
             IM_ASSERT(atlas->RendererHasTextures == has_textures);
         }
     }
+    for (ImTextureData* tex : g.UserTextures)
+        ImTextureDataUpdateNewFrame(tex);
 }
 
 // Build a single texture list
@@ -9037,7 +9039,7 @@ ImFont* ImGui::GetDefaultFont()
     return g.IO.FontDefault ? g.IO.FontDefault : atlas->Fonts[0];
 }
 
-// EXPERIMENTAL. Use ImTextureDataQueueUpload() to queue updates.
+// EXPERIMENTAL. Use ImTextureDataQueueUpload() to queue updates. Textures logic will be automatically be updated in NewFrame().
 void ImGui::RegisterUserTexture(ImTextureData* tex)
 {
     ImGuiContext& g = *GImGui;
